@@ -1,19 +1,17 @@
-
-
 Double_t notch(double *x, double *par) {
   double notch;
-  if ( x[0] <= 13e3) {
-    double freq1 = std::abs(std::pow(2 * M_PI * x[0], 2) * par[0] * par[1] -1);
+  if (x[0] <= 13e3) {
+    double freq1 = std::abs(std::pow(2 * M_PI * x[0], 2) * par[0] * par[1] - 1);
     double den = std::sqrt(std::pow(freq1 * (par[4] + 50), 2) +
                            std::pow(x[0] * 2 * M_PI * par[0], 2));
-    //notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
-    notch =(par[4] * 4.5 * freq1) / den;
+    // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
+    notch = (par[4] * 4.5 * freq1) / den;
   } else {
     double freq2 = std::abs(std::pow(2 * M_PI * x[0], 2) * par[2] * par[3] - 1);
     double den = std::sqrt(std::pow(freq2 * (par[4] + 50), 2) +
                            std::pow(x[0] * 2 * M_PI * par[2], 2));
-    //notch = par[5] + (par[4] * 4.5 * freq2) / den;
-    notch =(par[4] * 4.5 * freq2) / den;
+    // notch = par[5] + (par[4] * 4.5 * freq2) / den;
+    notch = (par[4] * 4.5 * freq2) / den;
   }
   return notch;
 }
@@ -24,10 +22,12 @@ Double_t phase(double *x, double *par) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double den = freq1 * (par[4] + 50);
     phase = 2 * M_PI * x[0] * par[0] / den;
+    phase = phase*180/M_PI;
   } else {
     double freq2 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
     double den = freq2 * (par[4] + 50);
     phase = 2 * M_PI * x[0] * par[2] / den;
+     phase = phase*180/M_PI;
   }
   return std::tan(phase);
 }
@@ -53,14 +53,16 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
   double r[3] = {1e3, 4.7e3, 10e3};
 
   TF1 *f[3];
-  TF1 *f_p[3];
-  TString graphName[3] = {"FA-1k.txt", "FA-4k.txt", "FA-10k.txt"}; //, "pFA-1k.txt", "pFA-4k.txt", "pFA-10k.txt" };
+  TF1 *fp[3];
+  TString graphName[3] = {
+      "FA-1k.txt", "FA-4k.txt",
+      "FA-10k.txt"}; //, "pFA-1k.txt", "pFA-4k.txt", "pFA-10k.txt" };
 
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
   Color_t colors[3] = {kBlue, kRed, kGreen};
 
-  for (Int_t i = 0; i < 6; i++) {
+  for (Int_t i = 0; i < 3; i++) {
     // grafici
     data[i] = new TGraphErrors(graphName[i], "%lg %lg %lg %lg");
     data[i]->SetLineColor(1);
@@ -82,22 +84,19 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
     f[i]->SetParName(2, "induttanza 2");
     f[i]->SetParName(3, "capacità 2");
     f[i]->SetParName(4, "resistenza");
-    //f[i]->SetParName(5, "fondo");
+    // f[i]->SetParName(5, "fondo");
     f[i]->SetParameter(0, l1);
     f[i]->SetParameter(1, c1);
     f[i]->SetParameter(2, l2);
     f[i]->SetParameter(3, c2);
     f[i]->SetParameter(4, r[i]);
     f[i]->SetParameter(5, bkg);
-    //f[i]->FixParameter(4, r[i]);
-    f[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-    f[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
-    f[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-    f[i]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-    
-    
-    /*
-    
+    // f[i]->FixParameter(4, r[i]);
+    // f[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+    // f[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
+    // f[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+    // f[i]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+
     fp[i] = new TF1("phase", phase, 0, 24000, 5);
     fp[i]->SetLineColor(colors[i]);
     fp[i]->SetParameter(0, l1);
@@ -117,28 +116,24 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
     fp[i]->SetParameter(3, c2);
     fp[i]->SetParameter(4, r[i]);
     fp[i]->SetParameter(5, bkg);
-    //fp[i]->FixParameter(4, r[i]);
+    // fp[i]->FixParameter(4, r[i]);
     fp[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
     fp[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
     fp[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
     fp[i]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-    
-*/    
-
 
     // fit
-    if(i<3){
-    data[i]->Fit(f[i], "SR");
-    mga->Add(data[i]);
-    leg->AddEntry(data[i], leg_str[i]);
-    // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
-    }
-    else{
-    data[i]->Fit(fp[i], "SR");
-    mgp->Add(data[i]);
-    leg->AddEntry(data[i], leg_str[i]);
-    // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
-    }
+    if (i < 3) {
+      data[i]->Fit(f[i], "SR");
+      mga->Add(data[i]);
+      leg->AddEntry(data[i], leg_str[i]);
+      // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
+    } /*else {
+      data[i]->Fit(fp[i], "SR");
+      mgp->Add(data[i]);
+      leg->AddEntry(data[i], leg_str[i]);
+      // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
+    }*/
   }
 
   mga->GetXaxis()->SetTitle("Frequenza (hz)");
@@ -146,24 +141,24 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
   mga->SetTitle("notch doppio");
   mga->Draw("APE");
   leg->Draw("SAME");
-   
-  mgp->GetXaxis()->SetTitle("Frequenza (hz)");
-  mgp->GetYaxis()->SetTitle("fase (rad)");
-  mgp->SetTitle("fase notch doppio");
-  mgp->Draw("APE");
-  leg->Draw("SAME");
   /*
-  char ans;
-  std::cout << "vuoi salvare il risultato?";
-  std::cin >> ans;
-  if (ans == 'y') {
-    mg->Write();
-    data[0]->Write();
-    data[1]->Write();
-    data[2]->Write();
-  }
-  file->Close();
-  */
+    mgp->GetXaxis()->SetTitle("Frequenza (hz)");
+    mgp->GetYaxis()->SetTitle("fase (rad)");
+    mgp->SetTitle("fase notch doppio");
+    mgp->Draw("APE");
+    leg->Draw("SAME");
+
+    char ans;
+    std::cout << "vuoi salvare il risultato?";
+    std::cin >> ans;
+    if (ans == 'y') {
+      mg->Write();
+      data[0]->Write();
+      data[1]->Write();
+      data[2]->Write();
+    }
+    file->Close();
+    */
 }
 
 void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
@@ -213,20 +208,20 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   f[num]->SetParName(2, "induttanza 2");
   f[num]->SetParName(3, "capacità 2");
   f[num]->SetParName(4, "resistenza");
- // f[num]->SetParName(5, "fondo");
+  // f[num]->SetParName(5, "fondo");
   f[num]->SetParameter(0, l1);
   f[num]->SetParameter(1, c1);
   f[num]->SetParameter(2, l2);
   f[num]->SetParameter(3, c2);
   f[num]->SetParameter(4, r[num]);
   f[num]->SetParameter(5, bkg);
-/*
-  f[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-  f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
-  f[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-  f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-  //f[num]->SetParLimits(4, r[num]-100,r[num]+100);
-*/
+  /*
+    f[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+    f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
+    f[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+    f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+    //f[num]->SetParLimits(4, r[num]-100,r[num]+100);
+  */
   // fit
   data->Fit(f[num], "SR");
   leg->AddEntry(data, leg_str[num]);
@@ -245,10 +240,10 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   }
   */
   file->Close();
-  
 }
 void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
-                double c1 = 330e-9, double l2 = 0.4838e-3, double c2 = 150e-9) {
+                  double c1 = 330e-9, double l2 = 0.4838e-3,
+                  double c2 = 150e-9) {
   // fitta su un solo grafico, devi solo dirgli quale
   //  stile
   // gStyle->SetOptStat(2210);
@@ -268,57 +263,57 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   // variabili per il ciclo
   double r[3] = {1e3, 4.7e3, 10e3};
 
-  TF1 *f[3];
+  TF1 *fp[3];
   TString graphName[3] = {"pFA-1k.txt", "pFA-4k.txt", "pFA-10k.txt"};
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
   Color_t colors[3] = {kBlue, kRed, kGreen};
 
-  data = new TGraphErrors(graphName[num], "%lg %lg %lg %lg ");
+  data = new TGraphErrors(graphName[num], "%lg %lg %lg %lg");
   data->SetLineColor(1);
   data->SetMarkerStyle(20);
   data->SetMarkerColor(colors[num]);
   data->SetLineColor(colors[num]);
 
   // funzioni
-    fp[num] = new TF1("phase", phase, 0, 24000, 5);
-    fp[num]->SetLineColor(colors[i]);
-    fp[num]->SetParameter(0, l1);
-    fp[num]->SetParameter(1, c1);
-    fp[num]->SetParameter(2, l2);
-    fp[num]->SetParameter(3, c2);
-    fp[num]->SetParameter(4, r[i]);
-    fp[num]->SetParameter(5, bkg);
-    fp[num]->SetParName(0, "induttanza 1");
-    fp[num]->SetParName(1, "capacità 1");
-    fp[num]->SetParName(2, "induttanza 2");
-    fp[num]->SetParName(3, "capacità 2");
-    fp[num]->SetParName(4, "resistenza");
-    fp[num]->SetParameter(0, l1);
-    fp[num]->SetParameter(1, c1);
-    fp[num]->SetParameter(2, l2);
-    fp[num]->SetParameter(3, c2);
-    fp[num]->SetParameter(4, r[i]);
-    fp[num]->SetParameter(5, bkg);
-    //fp[num]->FixParameter(4, r[i]);
-    fp[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-    fp[num]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
-    fp[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-    fp[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-/*
+  fp[num] = new TF1("phase", phase, 0, 24000, 5);
+  fp[num]->SetLineColor(colors[num]);
+  fp[num]->SetParameter(0, l1);
+  fp[num]->SetParameter(1, c1);
+  fp[num]->SetParameter(2, l2);
+  fp[num]->SetParameter(3, c2);
+  fp[num]->SetParameter(4, r[num]);
+  fp[num]->SetParameter(5, bkg);
+  fp[num]->SetParName(0, "induttanza 1");
+  fp[num]->SetParName(1, "capacità 1");
+  fp[num]->SetParName(2, "induttanza 2");
+  fp[num]->SetParName(3, "capacità 2");
+  fp[num]->SetParName(4, "resistenza");
+  fp[num]->SetParameter(0, l1);
+  fp[num]->SetParameter(1, c1);
+  fp[num]->SetParameter(2, l2);
+  fp[num]->SetParameter(3, c2);
+  fp[num]->SetParameter(4, r[num]);
+  fp[num]->SetParameter(5, bkg);
+  // fp[num]->FixParameter(4, r[i]);
   fp[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-  fp[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
+  fp[num]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
   fp[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
   fp[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-  fp[num]->SetParLimits(4, r[num]-100,r[num]+100);
-*/
+  /*
+    fp[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+    fp[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
+    fp[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+    fp[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+    fp[num]->SetParLimits(4, r[num]-100,r[num]+100);
+  */
   // fit
   data->Fit(fp[num], "SR");
   leg->AddEntry(data, leg_str[num]);
   // leg->AddEntry(f[num], "Fit " + std::to_string(num)).c_str());
   data->GetXaxis()->SetTitle("Frequenza (hz)");
-  data->GetYaxis()->SetTitle("fase rad");
-  data->SetTitle( " fase notch doppio");
+  data->GetYaxis()->SetTitle("fase (rad)");
+  data->SetTitle("fase notch doppio");
   data->Draw("APE");
   leg->Draw("SAME");
   /*
@@ -330,10 +325,7 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   }
   */
   file->Close();
-  
-
 };
-
 
 void compose() {
   TH1::AddDirectory(kFALSE);
@@ -363,3 +355,58 @@ void compose() {
   }
   file->Close();
 }
+
+void errors() {
+  TH1F *ha[6];
+  TH1F *hf[6];
+  TH1F *hgen[6];
+  fstream file_f[6];
+  fstream file_a[6];
+  file_a[1].open("Data/Errors/Frequency_amplitude_f1k.txt", ios::in);
+  file_f[1].open("Frequency_phase_f1k.txt", ios::in);
+  file_a[2].open("Data/Errors/Frequency_amplitude_f2k7.txt", ios::in);
+  file_f[2].open("Frequency_phase_f2k7.txt", ios::in);
+  file_a[3].open("Data/Errors/Frequency_amplitude_f8k.txt", ios::in);
+  file_f[3].open("Frequency_phase_f8k.txt", ios::in);
+  file_a[4].open("Data/Errors/Frequency_amplitude_f15k.txt", ios::in);
+  file_f[4].open("Frequency_phase_f15k.txt", ios::in);
+  file_a[5].open("Data/Errors/Frequency_amplitude_f18k.txt", ios::in);
+  file_f[5].open("Frequency_phase_f18k.txt", ios::in);
+  file_a[6].open("Data/Errors/Frequency_amplitude_f22k.txt", ios::in);
+  file_f[6].open("Frequency_phase_f22k.txt", ios::in);
+
+  double value[4];
+  double stda[6];
+  double stdf[6];
+  double stdgen[6];
+  double lim_fi[6]={26,28,33,40,41,47};
+  double lim_ff[6]={30,32,37,44,45,51};
+  double lim_geni[6]={998,2698,7998,1498,2199};
+  double lim_genf[6]={1002,2701,8001,1502,2202};
+  for (int i{0}; i < 6; i++) {
+    ha[i] = new TH1F("hist" + i, 10000,1.97,2.03 );
+    hf[i] = new TH1F("hist" + i, 10000, 2,lim_fi[i],lim_ff[i]);
+    hgen[i] = new TH1F("hist" + i, 10000,  lim_geni[i], lim_genf[i]);
+    while (true) {
+      file_a[i] >> value[0] >> value[1];
+      file_f[i] >> value[2] >> value[3];
+      if (!file_a[i].eof()) {
+        hgen[i]->Fill(value[0]);
+        ha[i]->Fill(value[1]);
+      }
+      if (!file_f[i].eof()) {
+        hf[i]->Fill(value[3]);
+      }
+      if(file_f[i].eof() && file_a[i].eof()){
+        break;
+      }
+    }
+      ha[i]->Fill(ha[i]->GetStdDev());
+      hf[i]->Fill(hf[i]->GetStdDev());
+      hgen[i]->Fill(hgen[i]->GetStdDev());
+    }
+    double freq[6] ={1e3,2.7e3,8e3,15e3,18e3,22e3};
+    TH1F *tota = new TGraph("tota", "tot",6, freq, stda);
+    TH1F *totgen = new TGraph("totgen", "tot", 12, freq, stdgen);
+    TH1F *totf = new TGraph("totf", "tot", 6, freq, stdf);
+  }
