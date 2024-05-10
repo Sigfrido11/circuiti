@@ -132,88 +132,60 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
 
   TF1 *f[3];
   TF1 *fp[3];
-  TString graphName[3] = {
-      "Data/1k_amplitude_R.txt", "Data/4k_amplitude_R_merge.txt",
-      "Data/4k_amplitude_R_merge.txt"}; //, "pFA-1k.txt", "pFA-4k.txt",
-                                        //"pFA-10k.txt" };
+  TString graphName[6] = {"Data/1k_amplitude_R.txt",
+                          "Data/4k_amplitude_R_merge.txt",
+                          "Data/4k_amplitude_R_merge.txt",
+                          "Data/1k_double_frequency_phase.txt",
+                          "Data/4k_double_frequency_phase_merged.txt",
+                          "10k_double_frequency_phase_merge.txt"};
 
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
   Color_t colors[3] = {kBlue, kRed, kGreen};
 
   TCanvas *c_amp = new TCanvas("amp", "amp", 200, 10, 1200, 400);
-  c_amp->Divide(3); // 3 righe, 2 colonne
+  c_amp->Divide(3, 1); // 3 righe, 1 colonne
 
   TCanvas *c_phase = new TCanvas("phase", "phase", 200, 10, 1200, 400);
-  c_phase->Divide(3);
+  c_phase->Divide(3, 1);
 
-  for (Int_t i = 0; i < 3; i++) {
+  for (Int_t i = 0; i < 6; i++) {
     // grafici
     data[i] = new TGraphErrors(graphName[i], "%lg %lg %lg %lg");
     data[i]->SetLineColor(1);
     data[i]->SetMarkerStyle(20);
     data[i]->SetMarkerColor(colors[i]);
     data[i]->SetLineColor(colors[i]);
-
-    // funzioni
-    f[i] = new TF1("ampitude", comp_notch, 0, 24000, 6);
-    f[i]->SetLineColor(colors[i]);
-    f[i]->SetParameter(0, l1);
-    f[i]->SetParameter(1, c1);
-    f[i]->SetParameter(2, l2);
-    f[i]->SetParameter(3, c2);
-    f[i]->SetParameter(4, r[i]);
-    f[i]->SetParameter(5, rl);
-    f[i]->SetParName(0, "induttanza 1");
-    f[i]->SetParName(1, "capacità 1");
-    f[i]->SetParName(2, "induttanza 2");
-    f[i]->SetParName(3, "capacità 2");
-    f[i]->SetParName(4, "resistenza");
-    f[i]->SetParName(5, "resistenza induttore");
-    f[i]->SetParameter(0, l1);
-    f[i]->SetParameter(1, c1);
-    f[i]->SetParameter(2, l2);
-    f[i]->SetParameter(3, c2);
-    f[i]->SetParameter(4, r[i]);
-    f[i]->SetParameter(5, rl);
-
-    f[i]->FixParameter(4, r[i]);
-    f[i]->FixParameter(5, rl);
-    f[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-    f[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
-    f[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-    f[i]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-
-    fp[i] = new TF1("phase", comp_phase, 0, 24000, 5);
-    fp[i]->SetLineColor(colors[i]);
-    fp[i]->SetParameter(0, l1);
-    fp[i]->SetParameter(1, c1);
-    fp[i]->SetParameter(2, l2);
-    fp[i]->SetParameter(3, c2);
-    fp[i]->SetParameter(4, r[i]);
-    fp[i]->SetParameter(5, bkg);
-    fp[i]->SetParName(0, "induttanza 1");
-    fp[i]->SetParName(1, "capacità 1");
-    fp[i]->SetParName(2, "induttanza 2");
-    fp[i]->SetParName(3, "capacità 2");
-    fp[i]->SetParName(4, "resistenza");
-    fp[i]->SetParName(5, "resistenza induttore");
-    fp[i]->SetParameter(0, l1);
-    fp[i]->SetParameter(1, c1);
-    fp[i]->SetParameter(2, l2);
-    fp[i]->SetParameter(3, c2);
-    fp[i]->SetParameter(4, r[i]);
-    fp[i]->SetParameter(5, rl);
-
-    fp[i]->FixParameter(4, r[i]);
-    fp[i]->FixParameter(5, rl);
-    fp[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-    fp[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
-    fp[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-    fp[i]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-
-    // fit
     if (i < 3) {
+      // funzioni
+      f[i] = new TF1("ampitude", comp_notch, 0, 24000, 6);
+      f[i]->SetLineColor(colors[i]);
+      f[i]->SetParameter(0, l1);
+      f[i]->SetParameter(1, c1);
+      f[i]->SetParameter(2, l2);
+      f[i]->SetParameter(3, c2);
+      f[i]->SetParameter(4, r[i]);
+      f[i]->SetParameter(5, rl);
+      f[i]->SetParName(0, "induttanza 1");
+      f[i]->SetParName(1, "capacità 1");
+      f[i]->SetParName(2, "induttanza 2");
+      f[i]->SetParName(3, "capacità 2");
+      f[i]->SetParName(4, "resistenza");
+      f[i]->SetParName(5, "resistenza induttore");
+      f[i]->SetParameter(0, l1);
+      f[i]->SetParameter(1, c1);
+      f[i]->SetParameter(2, l2);
+      f[i]->SetParameter(3, c2);
+      f[i]->SetParameter(4, r[i]);
+      f[i]->SetParameter(5, rl);
+
+      f[i]->FixParameter(4, r[i]);
+      f[i]->FixParameter(5, rl);
+      f[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+      f[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
+      f[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+      f[i]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+
       data[i]->Fit(f[i], "SR");
       mga->Add(data[i]);
       leg->AddEntry(data[i], leg_str[i]);
@@ -221,9 +193,37 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
       data[i]->Draw("APE");
       // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
     } else {
-      data[i]->Fit(fp[i], "SR");
+      fp[i - 3] = new TF1("phase", comp_phase, 0, 24000, 5);
+      fp[i - 3]->SetLineColor(colors[i- 3]);
+      fp[i - 3]->SetParameter(0, l1);
+      fp[i - 3]->SetParameter(1, c1);
+      fp[i - 3]->SetParameter(2, l2);
+      fp[i - 3]->SetParameter(3, c2);
+      fp[i - 3]->SetParameter(4, r[i - 3]);
+      fp[i - 3]->SetParameter(5, bkg);
+      fp[i - 3]->SetParName(0, "induttanza 1");
+      fp[i - 3]->SetParName(1, "capacità 1");
+      fp[i - 3]->SetParName(2, "induttanza 2");
+      fp[i - 3]->SetParName(3, "capacità 2");
+      fp[i - 3]->SetParName(4, "resistenza");
+      fp[i - 3]->SetParName(5, "resistenza induttore");
+      fp[i - 3]->SetParameter(0, l1);
+      fp[i - 3]->SetParameter(1, c1);
+      fp[i - 3]->SetParameter(2, l2);
+      fp[i - 3]->SetParameter(3, c2);
+      fp[i - 3]->SetParameter(4, r[i - 3]);
+      fp[i - 3]->SetParameter(5, rl);
+
+      fp[i - 3]->FixParameter(4, r[i - 3]);
+      fp[i - 3]->FixParameter(5, rl);
+      fp[i - 3]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+      fp[i - 3]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
+      fp[i - 3]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+      fp[i - 3]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+
+      data[i]->Fit(fp[i-3], "SR");
       mgp->Add(data[i]);
-      leg->AddEntry(data[i], leg_str[i]);
+      leg->AddEntry(data[i], leg_str[i-3]);
       c_phase->cd(i - 2);
       data[i]->Draw("APE");
       // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
@@ -233,6 +233,7 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
   mga->GetXaxis()->SetTitle("Frequenza (hz)");
   mga->GetYaxis()->SetTitle("Ampiezza (V)");
   mga->SetTitle("notch doppio");
+  c_amp->cd(4 + 1);
   mga->Draw("APE");
   leg->Draw("SAME");
   /*
@@ -314,11 +315,14 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   f[num]->SetParameter(4, r[num]);
   f[num]->SetParameter(5, rl);
 
-  f[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-  f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
-  f[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-  f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-  f[num]->SetParLimits(4, r[num] - 100, r[num] + 100);
+  f[num]->FixParameter(4, r[num]);
+  f[num]->FixParameter(5, rl);
+
+  // f[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+  // f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
+  // f[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+  // f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+  // f[num]->SetParLimits(4, r[num] - 100, r[num] + 100);
 
   // fit
   data->Fit(f[num], "SR");
@@ -362,8 +366,10 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   double r[3] = {1e3, 4.7e3, 10e3};
 
   TF1 *fp[3];
-  TString graphName[3] = {"Data/1k_.txt",
-                          "Data/4k_amplitude_R_merge.txt"}; // ognu9bhea
+  TString graphName[3] = {
+      "Data/1k_double_frequency_phase.txt",
+      "Data/4k_double_frequency_phase_merged.txt",
+      "Data/10k_double_frequency_phase_merged.txt"}; // ognu9bhea
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
   Color_t colors[3] = {kBlue, kRed, kGreen};
