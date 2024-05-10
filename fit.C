@@ -5,13 +5,13 @@ Double_t notch(double *x, double *par) {
     double den = std::sqrt(std::pow(freq1 * (par[4] + 50), 2) +
                            std::pow(x[0] * 2 * M_PI * par[0], 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
-    notch = (par[4] * 4.5 * freq1) / den;
+    notch = (par[4] * 2 * freq1) / den;
   } else {
     double freq2 = std::abs(std::pow(2 * M_PI * x[0], 2) * par[2] * par[3] - 1);
     double den = std::sqrt(std::pow(freq2 * (par[4] + 50), 2) +
                            std::pow(x[0] * 2 * M_PI * par[2], 2));
     // notch = par[5] + (par[4] * 4.5 * freq2) / den;
-    notch = (par[4] * 4.5 * freq2) / den;
+    notch = (par[4] * 2 * freq2) / den;
   }
   return notch;
 }
@@ -28,7 +28,7 @@ Double_t comp_notch(double *x, double *par) {
                   par[5] * par[5] * 2 * M_PI * x[0] * par[1];
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
-    notch = (par[4] * 4.5 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
+    notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
   } else {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
     double ri = 2 * M_PI * x[0] * par[3] * par[5];
@@ -39,7 +39,7 @@ Double_t comp_notch(double *x, double *par) {
                   par[5] * par[5] * 2 * M_PI * x[0] * par[3];
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
-    notch = (par[4] * 4.5 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
+    notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
   }
   return notch;
 }
@@ -54,7 +54,7 @@ Double_t approx_notch(double *x, double *par) {
     double den2 = 2 * M_PI * x[0] * par[0] * freq1;
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
-    notch = (par[4] * 4.5 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
+    notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
   } else {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
     double ri = 2 * M_PI * x[0] * par[3] * par[5];
@@ -63,7 +63,7 @@ Double_t approx_notch(double *x, double *par) {
     double den2 = 2 * M_PI * x[0] * par[2] * freq1;
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
-    notch = (par[4] * 4.5 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
+    notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
   }
   return notch;
 }
@@ -86,7 +86,7 @@ Double_t phase(double *x, double *par) {
 
 Double_t comp_phase(double *x, double *par) {
   double phase;
-  if (x[0] <= 7e3) {
+  if (x[0] <= 11e3) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double ri = 2 * M_PI * x[0] * par[1] * par[5];
     double den =
@@ -107,7 +107,7 @@ Double_t comp_phase(double *x, double *par) {
     phase = num / den;
     phase = phase * 180 / M_PI;
   }
-  return -std::tan(phase);
+  return -(phase);
 }
 
 void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
@@ -136,18 +136,18 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
                           "Data/4k_amplitude_R_merge.txt",
                           "Data/4k_amplitude_R_merge.txt",
                           "Data/1k_double_frequency_phase.txt",
-                          "Data/4k_double_frequency_phase_merged.txt",
-                          "10k_double_frequency_phase_merge.txt"};
+                          "Data/4k_double_frequency_phase_merge.txt",
+                          "Data/10k_double_frequency_phase_merge.txt"};
 
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
   Color_t colors[3] = {kBlue, kRed, kGreen};
 
   TCanvas *c_amp = new TCanvas("amp", "amp", 200, 10, 1200, 400);
-  c_amp->Divide(3, 1); // 3 righe, 1 colonne
+  c_amp->Divide(3, 2); // 3 righe, 1 colonne
 
   TCanvas *c_phase = new TCanvas("phase", "phase", 200, 10, 1200, 400);
-  c_phase->Divide(3, 1);
+  c_phase->Divide(3, 2);
 
   for (Int_t i = 0; i < 6; i++) {
     // grafici
@@ -194,7 +194,7 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
       // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
     } else {
       fp[i - 3] = new TF1("phase", comp_phase, 0, 24000, 5);
-      fp[i - 3]->SetLineColor(colors[i- 3]);
+      fp[i - 3]->SetLineColor(colors[i - 3]);
       fp[i - 3]->SetParameter(0, l1);
       fp[i - 3]->SetParameter(1, c1);
       fp[i - 3]->SetParameter(2, l2);
@@ -221,9 +221,9 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
       fp[i - 3]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
       fp[i - 3]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
 
-      data[i]->Fit(fp[i-3], "SR");
+      data[i]->Fit(fp[i - 3], "SR");
       mgp->Add(data[i]);
-      leg->AddEntry(data[i], leg_str[i-3]);
+      leg->AddEntry(data[i], leg_str[i - 3]);
       c_phase->cd(i - 2);
       data[i]->Draw("APE");
       // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
@@ -236,24 +236,23 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
   c_amp->cd(4 + 1);
   mga->Draw("APE");
   leg->Draw("SAME");
-  /*
-    mgp->GetXaxis()->SetTitle("Frequenza (hz)");
-    mgp->GetYaxis()->SetTitle("fase (rad)");
-    mgp->SetTitle("fase notch doppio");
-    mgp->Draw("APE");
-    leg->Draw("SAME");
-
-    char ans;
-    std::cout << "vuoi salvare il risultato?";
-    std::cin >> ans;
-    if (ans == 'y') {
-      mg->Write();
-      data[0]->Write();
-      data[1]->Write();
-      data[2]->Write();
-    }
-    file->Close();
-    */
+  mgp->GetXaxis()->SetTitle("Frequenza (hz)");
+  mgp->GetYaxis()->SetTitle("fase (rad)");
+  mgp->SetTitle("fase notch doppio");
+  mgp->Draw("APE");
+  leg->Draw("SAME");
+/*
+  char ans;
+  std::cout << "vuoi salvare il risultato?";
+  std::cin >> ans;
+  if (ans == 'y') {
+    mg->Write();
+    data[0]->Write();
+    data[1]->Write();
+    data[2]->Write();
+  }
+  file->Close();
+  */
 }
 
 void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
@@ -317,12 +316,14 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
 
   f[num]->FixParameter(4, r[num]);
   f[num]->FixParameter(5, rl);
+  //f[num]->FixParameter(1, c1);
+  //f[num]->FixParameter(3, c2);
 
-  // f[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
-  // f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
-  // f[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
-  // f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
-  // f[num]->SetParLimits(4, r[num] - 100, r[num] + 100);
+  f[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
+  f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
+  f[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
+  f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
+  //f[num]->SetParLimits(4, r[num] - 100, r[num] + 100);
 
   // fit
   data->Fit(f[num], "SR");
@@ -368,8 +369,8 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   TF1 *fp[3];
   TString graphName[3] = {
       "Data/1k_double_frequency_phase.txt",
-      "Data/4k_double_frequency_phase_merged.txt",
-      "Data/10k_double_frequency_phase_merged.txt"}; // ognu9bhea
+      "Data/4k_double_frequency_phase_merge.txt",
+      "Data/10k_double_frequency_phase_merge.txt"}; // ognu9bhea
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
   Color_t colors[3] = {kBlue, kRed, kGreen};
