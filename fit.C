@@ -1,16 +1,12 @@
-Double_t notch(double *x, double *par)
-{
+Double_t notch(double *x, double *par) {
   double notch;
-  if (x[0] <= 13e3)
-  {
+  if (x[0] <= 13e3) {
     double freq1 = std::abs(std::pow(2 * M_PI * x[0], 2) * par[0] * par[1] - 1);
     double den = std::sqrt(std::pow(freq1 * (par[4] + 50), 2) +
                            std::pow(x[0] * 2 * M_PI * par[0], 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
     notch = (par[4] * 2 * freq1) / den;
-  }
-  else
-  {
+  } else {
     double freq2 = std::abs(std::pow(2 * M_PI * x[0], 2) * par[2] * par[3] - 1);
     double den = std::sqrt(std::pow(freq2 * (par[4] + 50), 2) +
                            std::pow(x[0] * 2 * M_PI * par[2], 2));
@@ -20,11 +16,9 @@ Double_t notch(double *x, double *par)
   return notch;
 }
 
-Double_t comp_notch(double *x, double *par)
-{
+Double_t comp_notch(double *x, double *par) {
   double notch;
-  if (x[0] <= 13e3)
-  {
+  if (x[0] <= 13e3) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double ri = 2 * M_PI * x[0] * par[1] * par[5];
     double den1 =
@@ -35,16 +29,14 @@ Double_t comp_notch(double *x, double *par)
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
     notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
-  }
-  else
-  {
+  } else {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
-    double ri = 2 * M_PI * x[0] * par[3] * par[5];
+    double ri = 2 * M_PI * x[0] * par[3] * par[6];
     double den1 =
         (par[4] + 50) * (std::pow(freq1, 2) + std::pow(ri, 2)) +
-        par[5] * (freq1 + std::pow(2 * M_PI * x[0], 2) * par[2] * par[3]);
+        par[6] * (freq1 + std::pow(2 * M_PI * x[0], 2) * par[2] * par[3]);
     double den2 = 2 * M_PI * x[0] * par[2] * freq1 -
-                  par[5] * par[5] * 2 * M_PI * x[0] * par[3];
+                  par[6] * par[6] * 2 * M_PI * x[0] * par[3];
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
     notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
@@ -52,11 +44,9 @@ Double_t comp_notch(double *x, double *par)
   return notch;
 }
 
-Double_t approx_notch(double *x, double *par)
-{
+Double_t approx_notch(double *x, double *par) {
   double notch;
-  if (x[0] <= 13e3)
-  {
+  if (x[0] <= 13e3) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double ri = 2 * M_PI * x[0] * par[1] * par[5];
     double den1 = (par[4] + 50) * (std::pow(freq1, 2) + std::pow(ri, 2)) +
@@ -65,13 +55,11 @@ Double_t approx_notch(double *x, double *par)
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
     notch = (par[4] * 2 * (std::pow(freq1, 2) + std::pow(ri, 2))) / den;
-  }
-  else
-  {
+  } else {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
-    double ri = 2 * M_PI * x[0] * par[3] * par[5];
+    double ri = 2 * M_PI * x[0] * par[3] * par[6];
     double den1 = (par[4] + 50) * (std::pow(freq1, 2) + std::pow(ri, 2)) +
-                  par[5] * (std::pow(2 * M_PI * x[0], 2) * par[2] * par[3]);
+                  par[6] * (std::pow(2 * M_PI * x[0], 2) * par[2] * par[3]);
     double den2 = 2 * M_PI * x[0] * par[2] * freq1;
     double den = std::sqrt(std::pow(den1, 2) + std::pow(den2, 2));
     // notch = par[5] + (par[4] * 4.5 * freq1) / den; ho tolto il fondo
@@ -80,18 +68,14 @@ Double_t approx_notch(double *x, double *par)
   return notch;
 }
 
-Double_t phase(double *x, double *par)
-{
+Double_t phase(double *x, double *par) {
   double phase;
-  if (x[0] <= 7e3)
-  {
+  if (x[0] <= 7e3) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double den = freq1 * (par[4] + 50);
     phase = 2 * M_PI * x[0] * par[0] / den;
     phase = phase * 180 / M_PI;
-  }
-  else
-  {
+  } else {
     double freq2 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
     double den = freq2 * (par[4] + 50);
     phase = 2 * M_PI * x[0] * par[2] / den;
@@ -100,11 +84,9 @@ Double_t phase(double *x, double *par)
   return -std::tan(phase);
 }
 
-Double_t comp_phase(double *x, double *par)
-{
+Double_t comp_phase(double *x, double *par) {
   double phase;
-  if (x[0] <= 11e3)
-  {
+  if (x[0] <= 11e3) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double ri = 2 * M_PI * x[0] * par[1] * par[5];
     double den =
@@ -114,25 +96,22 @@ Double_t comp_phase(double *x, double *par)
                  par[5] * par[5] * 2 * M_PI * x[0] * par[1];
     phase = num / den;
     phase = phase * 180 / M_PI;
-  }
-  else
-  {
+  } else {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
-    double ri = 2 * M_PI * x[0] * par[3] * par[5];
+    double ri = 2 * M_PI * x[0] * par[3] * par[6];
     double den =
         (par[4] + 50) * (std::pow(freq1, 2) + std::pow(ri, 2)) +
-        par[5] * (freq1 + std::pow(2 * M_PI * x[0], 2) * par[2] * par[3]);
+        par[6] * (freq1 + std::pow(2 * M_PI * x[0], 2) * par[2] * par[3]);
     double num = 2 * M_PI * x[0] * par[2] * freq1 -
-                 par[5] * par[5] * 2 * M_PI * x[0] * par[3];
+                 par[6] * par[6] * 2 * M_PI * x[0] * par[3];
     phase = num / den;
     phase = phase * 180 / M_PI;
   }
   return -(phase);
 }
 
-void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
-               double l2 = 0.4838e-3, double c2 = 150e-9, double rl = 1.941)
-{
+void total_fit(double l1 = 10.44e-3, double c1 = 330e-9,
+               double l2 = 0.4838e-3, double c2 = 150e-9) {
   // stile
   gStyle->SetOptStat(2210);
   gStyle->SetOptFit(11111);
@@ -150,6 +129,7 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
 
   // variabili per il ciclo
   double r[3] = {1.0018e3, 4.6892e3, 9.973e3};
+  double rl[2] = {0.585, 1.941};
 
   TF1 *f[3];
   TF1 *fp[3];
@@ -170,40 +150,42 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
   TCanvas *c_phase = new TCanvas("phase", "phase", 200, 10, 1200, 400);
   c_phase->Divide(3, 2);
 
-  for (Int_t i = 0; i < 6; i++)
-  {
+  for (Int_t i = 0; i < 6; i++) {
     // grafici
     data[i] = new TGraphErrors(graphName[i], "%lg %lg %lg %lg");
     data[i]->SetLineColor(1);
     data[i]->SetMarkerStyle(20);
     data[i]->SetMarkerColor(colors[i]);
     data[i]->SetLineColor(colors[i]);
-    if (i < 3)
-    {
+    if (i < 3) {
       // funzioni
-      f[i] = new TF1("ampitude", comp_notch, 0, 24000, 6);
+      f[i] = new TF1("ampitude", comp_notch, 0, 24000, 7);
       f[i]->SetLineColor(colors[i]);
       f[i]->SetParameter(0, l1);
       f[i]->SetParameter(1, c1);
       f[i]->SetParameter(2, l2);
       f[i]->SetParameter(3, c2);
       f[i]->SetParameter(4, r[i]);
-      f[i]->SetParameter(5, rl);
+      f[i]->SetParameter(5, rl[0]);
+      f[i]->SetParameter(6, rl[1]);
       f[i]->SetParName(0, "induttanza 1");
       f[i]->SetParName(1, "capacità 1");
       f[i]->SetParName(2, "induttanza 2");
       f[i]->SetParName(3, "capacità 2");
       f[i]->SetParName(4, "resistenza");
-      f[i]->SetParName(5, "resistenza induttore");
+      f[i]->SetParName(5, "resistenza induttore grosso");
+      f[i]->SetParName(6, "resistenza induttore piccolo");
       f[i]->SetParameter(0, l1);
       f[i]->SetParameter(1, c1);
       f[i]->SetParameter(2, l2);
       f[i]->SetParameter(3, c2);
       f[i]->SetParameter(4, r[i]);
-      f[i]->SetParameter(5, rl);
+      f[i]->SetParameter(5, rl[0]);
+      f[i]->SetParameter(6, rl[1]);
 
       f[i]->FixParameter(4, r[i]);
-      f[i]->FixParameter(5, rl);
+      f[i]->FixParameter(5, rl[0]);
+      f[i]->FixParameter(6, rl[1]);
       f[i]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
       f[i]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
       f[i]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
@@ -215,32 +197,32 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
       c_amp->cd(i + 1);
       data[i]->Draw("APE");
       // leg->AddEntry(f[i], "Fit " + std::to_string(i)).c_str());
-    }
-    else
-    {
-      fp[i - 3] = new TF1("phase", comp_phase, 0, 24000, 5);
+    } else {
+      fp[i - 3] = new TF1("phase", comp_phase, 0, 24000, 7);
       fp[i - 3]->SetLineColor(colors[i - 3]);
       fp[i - 3]->SetParameter(0, l1);
       fp[i - 3]->SetParameter(1, c1);
       fp[i - 3]->SetParameter(2, l2);
       fp[i - 3]->SetParameter(3, c2);
       fp[i - 3]->SetParameter(4, r[i - 3]);
-      fp[i - 3]->SetParameter(5, bkg);
       fp[i - 3]->SetParName(0, "induttanza 1");
       fp[i - 3]->SetParName(1, "capacità 1");
       fp[i - 3]->SetParName(2, "induttanza 2");
       fp[i - 3]->SetParName(3, "capacità 2");
       fp[i - 3]->SetParName(4, "resistenza");
-      fp[i - 3]->SetParName(5, "resistenza induttore");
+      fp[i - 3]->SetParName(5, "resistenza induttore grosso");
+      fp[i - 3]->SetParName(6, "resistenza induttore piccolo");
       fp[i - 3]->SetParameter(0, l1);
       fp[i - 3]->SetParameter(1, c1);
       fp[i - 3]->SetParameter(2, l2);
       fp[i - 3]->SetParameter(3, c2);
       fp[i - 3]->SetParameter(4, r[i - 3]);
-      fp[i - 3]->SetParameter(5, rl);
+      fp[i - 3]->SetParameter(5, rl[0]);
+      fp[i - 3]->SetParameter(6, rl[1]);
 
       fp[i - 3]->FixParameter(4, r[i - 3]);
-      fp[i - 3]->FixParameter(5, rl);
+      fp[i - 3]->FixParameter(5, rl[0]);
+      fp[i - 3]->FixParameter(6, rl[1]);
       fp[i - 3]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
       fp[i - 3]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
       fp[i - 3]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
@@ -280,10 +262,8 @@ void total_fit(double bkg = 0., double l1 = 10.44e-3, double c1 = 330e-9,
     */
 }
 
-void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
-                double c1 = 330e-9, double l2 = 0.4838e-3, double c2 = 150e-9,
-                double rl = 1.941)
-{
+void single_fit(int num, double l1 = 10.44e-3,
+                double c1 = 330e-9, double l2 = 0.4838e-3, double c2 = 150e-9) {
   // fitta su un solo grafico, devi solo dirgli quale
   //  stile
   // gStyle->SetOptStat(2210);
@@ -291,6 +271,7 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   TH1::AddDirectory(kFALSE);
 
   num = num - 1;
+  double rl[2] = {0.585, 1.941};
 
   // grafici
   TGraphErrors *data;
@@ -319,7 +300,7 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   data->SetLineColor(colors[num]);
 
   // funzioni
-  f[num] = new TF1("myfunc", comp_notch, 1000, 24000, 6);
+  f[num] = new TF1("myfunc", comp_notch, 1000, 24000, 7);
 
   f[num]->SetLineColor(colors[num]);
 
@@ -328,21 +309,24 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   f[num]->SetParName(2, "induttanza 2");
   f[num]->SetParName(3, "capacità 2");
   f[num]->SetParName(4, "resistenza");
-  f[num]->SetParName(5, "resistenza induttanza");
+  f[num]->SetParName(5, "resistenza induttanza grosso");
+  f[num]->SetParName(6, "resistenza induttanza piccolo");
 
   f[num]->SetParameter(0, l1);
   f[num]->SetParameter(1, c1);
   f[num]->SetParameter(2, l2);
   f[num]->SetParameter(3, c2);
   f[num]->SetParameter(4, r[num]);
-  f[num]->SetParameter(5, bkg);
+  f[num]->SetParameter(5, rl[0]);
+  f[num]->SetParameter(6, rl[1]);
 
   f[num]->SetParameter(0, l1);
   f[num]->SetParameter(1, c1);
   f[num]->SetParameter(2, l2);
   f[num]->SetParameter(3, c2);
   f[num]->SetParameter(4, r[num]);
-  f[num]->SetParameter(5, rl);
+  f[num]->SetParameter(5, rl[0]);
+  f[num]->SetParameter(6, rl[1]);
 
   // f[num]->FixParameter(4, r[num]);
   // f[num]->FixParameter(5, rl);
@@ -376,10 +360,9 @@ void single_fit(int num, double bkg = 0., double l1 = 10.44e-3,
   file->Close();
 }
 
-void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
-                  double c1 = 330e-9, double l2 = 0.4838e-3, double c2 = 150e-9,
-                  double rl = 1.941)
-{
+void single_phase(int num, double l1 = 10.44e-3,
+                  double c1 = 330e-9, double l2 = 0.4838e-3,
+                  double c2 = 150e-9) {
   // fitta su un solo grafico, devi solo dirgli quale
   //  stile
   // gStyle->SetOptStat(2210);
@@ -387,7 +370,7 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   TH1::AddDirectory(kFALSE);
 
   num = num - 1;
-
+  double rl[2] = {0.585, 1.941};
   // grafici
   TGraphErrors *data;
   TFile *file = new TFile("Data.root", "RECREATE");
@@ -415,29 +398,34 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   data->SetLineColor(colors[num]);
 
   // funzioni
-  fp[num] = new TF1("phase", comp_phase, 0, 24000, 6);
+  fp[num] = new TF1("phase", comp_phase, 0, 24000, 7);
   fp[num]->SetLineColor(colors[num]);
   fp[num]->SetParameter(0, l1);
   fp[num]->SetParameter(1, c1);
   fp[num]->SetParameter(2, l2);
   fp[num]->SetParameter(3, c2);
   fp[num]->SetParameter(4, r[num]);
-  fp[num]->SetParameter(5, rl);
+  fp[num]->SetParameter(5, rl[0]);
+  fp[num]->SetParameter(6, rl[1]);
   fp[num]->SetParName(0, "induttanza 1");
   fp[num]->SetParName(1, "capacità 1");
   fp[num]->SetParName(2, "induttanza 2");
   fp[num]->SetParName(3, "capacità 2");
   fp[num]->SetParName(4, "resistenza");
-  fp[num]->SetParName(5, "resistenza induttore");
+  fp[num]->SetParName(5, "resistenza induttore grosso");
+  fp[num]->SetParName(5, "resistenza induttore piccolo");
   fp[num]->SetParameter(0, l1);
   fp[num]->SetParameter(1, c1);
   fp[num]->SetParameter(2, l2);
   fp[num]->SetParameter(3, c2);
   fp[num]->SetParameter(4, r[num]);
-  fp[num]->SetParameter(5, rl);
+  fp[num]->SetParameter(5, rl[0]);
+  fp[num]->SetParameter(6, rl[1]);
 
   fp[num]->FixParameter(4, r[num]);
-  fp[num]->FixParameter(5, rl);
+  fp[num]->FixParameter(5, rl[0]);
+  fp[num]->FixParameter(6, rl[1]);
+
   fp[num]->SetParLimits(1, c1 - 1e-9, c1 + 1e-9);
   fp[num]->SetParLimits(3, c2 - 10e-9, c2 + 1e-9);
   fp[num]->SetParLimits(0, l1 - 1e-3, l1 + 1e-3);
@@ -469,8 +457,7 @@ void single_phase(int num, double bkg = 0., double l1 = 10.44e-3,
   file->Close();
 };
 
-void compose()
-{
+void compose() {
   TH1::AddDirectory(kFALSE);
   TFile *file = new TFile("Data.root");
   TGraphErrors *data1 = (TGraphErrors *)file->Get("resistenza 1");
@@ -493,15 +480,13 @@ void compose()
   char ans;
   std::cout << "vuoi salvare il risultato?";
   std::cin >> ans;
-  if (ans == 'y')
-  {
+  if (ans == 'y') {
     mg->Write();
   }
   file->Close();
 }
 
-void errors()
-{
+void errors() {
   TCanvas *c[5];
   TH1F *ha[6];
   TH1F *hf[6];
@@ -615,8 +600,7 @@ void errors()
   TGraph *chan_0 = new TGraph("Data/Phase_diff_chann/Channel_0.txt", "%lg %lg");
   TGraph *chan_1 = new TGraph("Data/Phase_diff_chann/Channel_1.txt", "%lg %lg");
   TGraph *chan_diff = new TGraph();
-  for (int i = 0; i < chan_0->GetN(); i++)
-  {
+  for (int i = 0; i < chan_0->GetN(); i++) {
     chan_diff->SetPoint(i, chan_0->GetPointX(i),
                         -chan_0->GetPointY(i) + chan_1->GetPointY(i));
   }
