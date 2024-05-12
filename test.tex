@@ -1,7 +1,6 @@
 % Imposta lo spazio in orizzontale all'inizio di ogni paragrafo
 \setlength{\parindent}{20pt}
 \documentclass[12pt, letterpaper]{article}
-\usepackage{lipsum} % Pacchetto per generare testo fittizio
 \usepackage{graphicx}
 \usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
 \usepackage{amsmath}
@@ -27,12 +26,20 @@ In questo esperimento abbiamo analizzato la variazione di ampiezza e la fase del
 Il circuito completo, visibile in Figura 1, è costituito da due filtri separati in serie da una resistenza ai capi della quale sono state prese le misure della differenza di potenziale che veniva generato in modo sinusoidale ad una frequenza variabile dalla scheda Elvis II. Così attraverso un programma di acquisizione Labview siamo riusciti ad ottenere i grafici della differenza di fase e dell’ampiezza dell’onda per resistenze diverse. 
 \begin{figure}[h]
 \floatbox[{\capbeside\thisfloatsetup{capbesideposition={right,bottom}}}]{figure}[\FBwidth]
-{\caption{la foto mostra lo schema del circuito costituito da un doppio filtro notch separato in serie da una resistenza}\label{fig:figura}}
+{\caption{\textcolor{gray}{la foto mostra lo schema del circuito costituito da un doppio filtro notch separato in serie da una resistenza}}
+\label{fig:figura}}
 {\includegraphics[width=0.6\linewidth]{circuito.jpeg}}
 \end{figure}
 
 \section{Metodo Sperimentale}
 \subsection{Apparato sperimentale}
+\begin{wrapfigure}{r}{0.4\textwidth}
+    \centering
+    \includegraphics[width=0.4\textwidth]{apparato_sperimentale.jpeg}
+    \caption{Apparato sperimentale}
+    \label{fig:apparato}
+\end{wrapfigure}
+
 Per l'esperimento, volto ad analizzare il comportamento dell'ampiezza e della fase della differenza di potenziale in un circuito costituito da un doppio filtro notch,  sono state condotte diverse valutazioni sulle specifiche dei componenti da impiegare. In particolare, sono stati selezionati due capacitori e due induttori in modo che le frequenze di risonanza dei filtri fossero sufficientemente distanziate evitando in questo modo influenze reciproche e facilitando l’analisi dei dati. 
 Nonostante ci fosse stata fornita un’indicazione sui valori nominali delle specifiche tecniche dei vari componenti abbiamo deciso di indagare meglio l’effettivo comportamento degli stessi mediante misure ripetute. Per farlo ci siamo avvalsi del multimetro digitale incorporato nella scheda Elvis II. Questo strumento ci ha permesso di tarare il fondoscala dell'acquisizione in base al valore da misurare, garantendo così risultati più precisi.
 METTI COSE DATI
@@ -40,14 +47,7 @@ Sono state poi selezionate diverse resistenze, al fine di analizzare il comporta
 Infine per determinare l'ampiezza e la differenza di fase tra il segnale generato dalla scheda Elvis e quello misurato ai capi della resistenza nel nostro circuito, abbiamo utilizzato un programma LabVIEW in grado di campionare alla frequenza desiderata con un numero di punti per acquisizione variabile. In particolare, abbiamo impostato la frequenza di campionamento a circa 20'000 Hz e il numero di punti a (100?).
 Il programma LabVIEW era inoltre in grado di comunicare con il function generator della scheda Elvis II, consentendoci di variare la frequenza del segnale generato dopo aver acquisito un numero di campioni sufficiente. Questo ci ha permesso di stimare agevolmente gli errori associati a ciascuna misura e di ottenere valutazioni migliori sugli errori.
 
-\begin{wrapfigure}{r}{0.4\textwidth}
-    \centering
-    \includegraphics[width=0.38\textwidth]{apparato_sperimentale.jpeg}
-    \caption{Qui ci va la descrizione della figura}
-    \label{fig:figura}
-\end{wrapfigure}
 
- 
 \subsection{Svolgimento}
 Si è iniziato conducendo diverse analisi per determinare i componenti più adatti per il nostro circuito per poi verificare, dopo una rapida misurazione delle grandezze coinvolte, con l’oscilloscopio da banco che il risultato effettivo fosse in sintonia con le nostre previsioni e che il fenomeno fosse facilmente osservabile. Una volta aver selezionato la componente si è passati ad una valutazione più attenta delle proprietà dell’elemento con il multimetro digitale della scheda Elvis II effettuando diverse misurazioni al fine di incrementare la precisione. 
 
