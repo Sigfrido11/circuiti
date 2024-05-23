@@ -102,7 +102,7 @@ Double_t phase(double *x, double *par) {
 
 Double_t comp_phase(double *x, double *par) {
   double phase;
-  if (x[0] <= 11e3) {
+  if (x[0] <= 10e3) {
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[0] * par[1];
     double ri = 2 * M_PI * x[0] * par[1] * par[5];
     double den =
@@ -112,6 +112,7 @@ Double_t comp_phase(double *x, double *par) {
                  par[5] * par[5] * 2 * M_PI * x[0] * par[1];
     phase = num / den;
   } else {
+    if(x[0] >= 12e3){
     double freq1 = 1 - std::pow(2 * M_PI * x[0], 2) * par[2] * par[3];
     double ri = 2 * M_PI * x[0] * par[3] * par[6];
     double den =
@@ -120,6 +121,7 @@ Double_t comp_phase(double *x, double *par) {
     double num = 2 * M_PI * x[0] * par[2] * freq1 -
                  par[6] * par[6] * 2 * M_PI * x[0] * par[3];
     phase = num / den;
+  }
   }
   return -(std::atan(phase) * 180 / M_PI);
 }
@@ -306,18 +308,19 @@ void single_fit1(int num, double l1 = 10.34e-3, double c1 = 315e-9,
 
   TString leg_str[3] = {"resistenza 1", "resistenza 2", "resistenza 3"};
 
-  Color_t colors[6] = {kBlue, kRed, kGreen, kBlue + 3, kRed + 3, kGreen + 3};
+  Color_t colors[6] = {kBlue, kRed, kGreen, kBlue + 3, kRed + 3, kBlack};
 
   data = new TGraphErrors(graphName[num], "%lg %lg %lg %lg ");
   data->SetLineColor(1);
   data->SetMarkerStyle(20);
-  data->SetMarkerSize(0.001);
+  data->SetMarkerSize(0);
   data->SetMarkerColor(colors[num]);
   data->SetLineColor(colors[num]);
 
   // funzioni
   f[num] = new TF1("myfunc", comp_notch, 1000, 23000, 7);
-  f[num]->SetLineColor(colors[num + 4]);
+  f[num]->SetLineColor(colors[5]);
+  f[num]->SetLineWidth(2);
   f[num]->SetParName(0, "induttanza 1");
   f[num]->SetParName(1, "capacità 1");
   f[num]->SetParName(2, "induttanza 2");
@@ -333,19 +336,20 @@ void single_fit1(int num, double l1 = 10.34e-3, double c1 = 315e-9,
   f[num]->SetParameter(5, rl[0]);
   f[num]->SetParameter(6, rl[1]);
 
-  f[num]->SetParLimits(5, 0, rl[0] + 130e-2);
+  //f[num]->SetParLimits(5, 0, rl[0] + 130e-2);
   //f[num]->SetParLimits(6, 0, rl[1] + 5.5);
   f[num]->FixParameter(4, r[num]);
 
   // f2[num]->FixParameter(3, rl[1]+1.7);
-  // f2[num]->SetParLimits(0, l2 - 0.5e-3, l2 + 0.5e-3);
-  // f2[num]->SetParLimits(1, c2 - 15e-9, c2 + 15e-9);
+   f[num]->SetParLimits(2, l2 - 1.5e-2, l2 + 1.5e-2);
+   f[num]->SetParLimits(3, c2 - 55e-8, c2 + 90e-9);
+  f[num]->SetParLimits(5, 0, 15);
 
   // f2[num]->SetParLimits(2, r[num] - 100, r[num] + 100);
   // f2[num]->SetParLimits(3, rl[1] - 0.1, rl[1] + 0.1);
 
   // f2[num]->FixParameter(0, l2);
-  // f2[num]->FixParameter(1, c2);
+  // f[num]->FixParameter(1, c1);
   // f[num]->FixParameter(2, l1);
   // f[num]->FixParameter(1, c1);
   // f[num]->FixParameter(4, r[num]);
@@ -365,7 +369,7 @@ void single_fit1(int num, double l1 = 10.34e-3, double c1 = 315e-9,
     f[num]->SetParLimits(2, l2 - 0.1e-3, l2 + 0.1e-3);
     f[num]->SetParLimits(3, c2 - 1e-9, c2 + 1e-9);
     f[num]->SetParLimits(4, r[num] - 100, r[num] + 100);
-    f[num]->SetParLimits(5, rl[0] - 0.1, rl[0] + 0.1);
+    
     f[num]->SetParLimits(6, rl[1] - 0.1, rl[1] + 0.1);
   */
   // fit
@@ -373,8 +377,9 @@ void single_fit1(int num, double l1 = 10.34e-3, double c1 = 315e-9,
   // leg->AddEntry(data, leg_str[num]);
   //  leg->AddEntry(f[num], "Fit " + std::to_string(num)).c_str());
   data->GetXaxis()->SetTitle("Frequenza (hz)");
+  data->GetYaxis()->SetRangeUser(0.,2.2);
   data->GetYaxis()->SetTitle("Ampiezza (V)");
-  data->SetTitle("notch doppio");
+  data->SetTitle(" ");
   data->Draw("APE");
   //leg->Draw("SAME");
   /*
@@ -428,7 +433,7 @@ void single_fit2(int num, double l1 = 10.34e-3, double c1 = 315e-9,
   data->SetLineColor(colors[num]);
 
   // funzioni
-  f[num] = new TF1("myfunc", single_notch, 500, 13000, 4);
+  f[num] = new TF1("myfunc", single_notch, 500, 9000, 4);
   f[num]->SetLineColor(colors[num + 3]);
   f[num]->SetParName(0, "induttanza 1");
   f[num]->SetParName(1, "capacità 1");
@@ -447,7 +452,7 @@ void single_fit2(int num, double l1 = 10.34e-3, double c1 = 315e-9,
   //f[num]->SetParLimits(3, -100. , rl[0] + 1800.5);
   //f[num]->SetParLimits(2, r[num]-500,r[num]+10000);
 
-  f2[num] = new TF1("myfunc", single_notch, 10000, 24000, 4);
+  f2[num] = new TF1("myfunc", single_notch, 11000, 24000, 4);
   f2[num]->SetLineColor(colors[num + 3]);
   f2[num]->SetParName(0, "induttanza 2");
   f2[num]->SetParName(1, "capacità 2");
@@ -497,7 +502,8 @@ void single_fit2(int num, double l1 = 10.34e-3, double c1 = 315e-9,
   //   leg->AddEntry(f[num], "Fit " + std::to_string(num)).c_str());
   data->GetXaxis()->SetTitle("Frequenza (hz)");
   data->GetYaxis()->SetTitle("Ampiezza (V)");
-  data->SetTitle("notch doppio");
+  data->SetTitle(" ");
+  data->GetYaxis()->SetRangeUser(0.,2.2);
   data->Draw("APE");
   data->Fit(f[num], "SR");
   data->Fit(f2[num], "SR");
